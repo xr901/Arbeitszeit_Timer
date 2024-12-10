@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0">
+	<meta name="mobile-web-app-capable" content="yes">
+	<title>Timer</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="wrapper">
+	<p id="time">enable javascript</p>
+	<div id="setting">
+		<input id="tin" type="time" value="07:30" />
+		<button id="butt">set</button>
+	</div>
+	<table id="output">
+	</table>
+</div> <!-- #wrapper -->
+<div id="graph" class="bar">
+	<div id="graphinner" class="bar">
+		<div class="bar" id="bsoll"></div>
+		<div class="bar" id="bbr1"></div>
+		<div class="bar" id="bbr2"></div>
+		<div class="bar" id="bnow"></div>
+	</div>
+</div>
+<script>
+function getId(id) { return document.getElementById(id) };
+
+let startTime = new Date();
+let currentTime;
+const p1 = 30, p2 = 15;			// 1. Pause 30 min, 2. Pause 15 min
+const break1begin = 6 * 60;		// 6h bis zur ersten Pause
+//const soll = 7 * 60 + 35 + p1;	// ~38h 7h35/day +Pause1
+const soll = 7 * 60 + 45 + p1;	// ~39h 7h45/day +Pause1
+const break2begin = 9 * 60 + p1;	// 9h +Pause1
+const max = 10 * 60 + p1 + p2;		// 10h +Pause1 +Pause2
+
+let ptime = getId("time");
+let butt = getId("butt");
+
+function buildDiagram() {
+	var outp = getId("output");
+	outp.innerHTML = '';
+	createP("6h", break1begin);
+	createP("SOLL", soll);
+	createP("9h", break2begin);
+	createP("MAX", max);
+
+	var sTime = startTime.getTime() / 1000;
+	var cTime = currentTime.getTime() / 1000 - sTime;
+	var mTime = max * 60;
+
+	// if current time between start and max, display progress bar
+	if(cTime > mTime + 20 * 60 || cTime +sTime < sTime) return;
+
+	getId("graph").style.visibility = "visible";
+	
+	const bnow = (100 / mTime * cTime).toFixed(1);
+	getId("bnow").style.left = bnow + "%";
+
+	const bsoll = (100 / max * soll).toFixed(1);
+	getId("bsoll").style.left = bsoll + "%";
+	getId("bsoll").style.width = (100 - bsoll)  +  "%";
+
+	const bbr1 = (100 / max * break1begin).toFixed(1);
+	getId("bbr1").style.left = bbr1 + "%";
+	getId("bbr1").style.width = (100 / max * p1).toFixed(1)  +  "%";
+
+	const bbr2 = (100 / max * break2begin).toFixed(1);
+	getId("bbr2").style.left = bbr2 + "%";
+	getId("bbr2").style.width = (100 / max * p2).toFixed(1)  +  "%";
+
+	// blink if now is between SOLL until SOLL +5 min
+	if(cTime >= soll * 60 && cTime < (soll +5) * 60)
+		getId("SOLL").style.animation = "blinker 1s ease-in-out infinite";
+	
+	// blink if now >= MAX -10 min
+	if(cTime >= (max -10) * 60)
+		getId("MAX").style.animation = "blinker 1s ease-in-out infinite";
+
+}
+
+
+butt.addEventListener("click", function() {
+	const [hours, minutes] = tin.value.split(":").map(Number);
+	startTime.setHours(hours, minutes, 0, 0);
+	//startTime = hours * 60 + minutes;
+	
+	buildDiagram();
+});
+
+function t(a) {
+	return a.toLocaleTimeString("de-DE", {
+		hour12:	false,
+		hour:	"numeric",
+		minute:	"numeric"
+	});
+}
+
+function createP(name, val) {
+	var d = new Date();
+	var tr = document.createElement("tr");
+	tr.setAttribute("id", name);
+	tr.setAttribute("class", "out");
+	var td1 = document.createElement("td");
+	var td2 = document.createElement("td");
+	tr.appendChild(td1);
+	tr.appendChild(td2);
+	var outp = getId("output");
+	d.setHours(startTime.getHours(), startTime.getMinutes() + val, 0, 0);
+	td1.textContent = name;
+	td2.textContent =  t(d) + " Uhr";
+	td2.setAttribute("class", "tdright");
+	outp.appendChild(tr);
+}
+
+function update() {
+	// update time
+	currentTime = new Date();
+	//currentTime.setHours(16, 50, 0,0);
+	ptime.textContent = t(currentTime);
+
+	// update diagram
+	buildDiagram();
+}
+update();
+
+// refresh every 5 seconds
+setInterval(function() {
+	update();
+}, 5000);
+
+</script>
+</body>
+</html>
