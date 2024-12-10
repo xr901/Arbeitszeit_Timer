@@ -1,0 +1,73 @@
+* { padding: 0; margin: 0 }
+:root {
+	--green: #78bc61;
+	--green: #00ff00;
+	--red: #e9806e;
+	--red: #ff0000;
+	--gray: #666;
+}
+@keyframes blinker {
+	50% { opacity: 0; }
+}
+html, body {
+	color: white;
+	background: black;
+	font-family: sans-serif;
+}
+#wrapper {
+	width: 90%;
+	max-width: 540px;
+	margin: 4px auto;
+}
+#setting {
+	width: 300px;
+	margin: 0 auto 22px;
+	background: white;
+}
+table {
+	width: 300px;
+	margin: 0 auto;
+}
+.tdright { text-align: right; }
+p, input, td { font-size: 250%; }
+#tin {
+	border: none;
+	width: 50%;
+}
+p { text-align: center; }
+#SOLL { color: var(--green); }
+#MAX { color: var(--red); }
+button {
+	font-size: 190%;
+	text-transform: uppercase;
+	font-weight: bold;
+	padding: 0 6px;
+}
+#time {	font-size: 8em; }
+.out { margin-top: 5px; }
+#graph {
+	width: 100%;
+	background: rgb(0,0,0);
+	background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, var(--red) 70%);
+	visibility: hidden;
+}
+#graphinner {
+	position: relative;
+	width: 94%;
+	margin: 0 auto;
+	background: #222;
+}
+.bar {
+	position: absolute;
+	height: 40px;
+	bottom: 0;
+}
+#bnow {
+	width: 2px;
+	background: #fff;
+	height: 60px;
+	border-left: 2px solid black;
+}
+#bsoll { background: var(--green); }
+#bbr1, #bbr2 { background: var(--gray); }
+
